@@ -1,0 +1,3 @@
+# CSU Cosmological Constant Validation V5 — Requirements
+# Only SymPy is needed. All physics modules are part of SymPy.
+sympy>=1.12
