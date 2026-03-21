@@ -138,4 +138,10 @@ python CSU_Cosmological_Constant_Validation_V5_COMPLETE.py
 Academic use. Part of the CSU (Computational Substrate Unity) research framework.
 
 ### Contact
-[Your contact information here]
+drlukecsu@protonmail.com
+
+### Main Papers Can Be Found Here:
+
+Main Paper: https://doi.org/10.5281/zenodo.19140079
+
+Supplemental Paper (Derivation Chain): https://doi.org/10.5281/zenodo.19139931
