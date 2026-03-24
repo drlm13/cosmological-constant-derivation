@@ -7,6 +7,9 @@ cosmological constant derivation. Every mathematical claim in the CSU papers
 is verified by explicit SymPy computation — no theatrical math, no hardcoded
 results, no lazy assertions.
 
+### Run The Calculations
+https://drlm13.github.io/cosmological-constant-derivation/tools/calculator.html
+
 ### Version History
 - **V1-V3**: Initial validation with TensorHead declarations and check(True) placeholders
 - **V4**: Expanded to 35 sections, 28 physics modules, but still contained 43 check(True)
