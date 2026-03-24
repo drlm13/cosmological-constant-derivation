@@ -1680,17 +1680,23 @@
 
         function cosmoCalc(z, ol, om, h0) {
             var dh = C_LIGHT / h0, th = 977.8 / h0;
-            var dc = (z > 0) ? dh * simpson(function(zp){return 1/Ez(zp,ol,om);}, 0, z, 1000) : 0;
+            var dc = (z > 0) ? dh * simpson(function(zp){return 1/Ez(zp,ol,om);}, 0, z, 10000) : 0;
             var dl = dc * (1 + z);
             var da = dc / (1 + z);
             var mu = (dl > 0) ? 5 * Math.log10(dl * 1e6 / 10) : 0;
-            var tlb = (z > 0) ? th * simpson(function(zp){return 1/((1+zp)*Ez(zp,ol,om));}, 0, z, 1000) : 0;
-            var age_total = th * simpson(function(zp){return 1/((1+zp)*Ez(zp,ol,om));}, 0, 10000, 2000);
-            var age_at_z = age_total - tlb;
+            var tlb = (z > 0) ? th * simpson(function(zp){return 1/((1+zp)*Ez(zp,ol,om));}, 0, z, 10000) : 0;
+            /* age(z) = ∫_z^∞ dz'/[(1+z')H(z')]: split integral for accuracy */
+            var agef = function(zp){return 1/((1+zp)*Ez(zp,ol,om));};
+            var Z_INF = 10000, age_at_z = 0;
+            if (z < Z_INF) {
+                var bnd = Math.max(z + 50, 200);
+                if (bnd >= Z_INF) { age_at_z = th * simpson(agef, z, Z_INF, 10000); }
+                else { age_at_z = th * (simpson(agef, z, bnd, 5000) + simpson(agef, bnd, Z_INF, 5000)); }
+            }
             var vc = (4/3) * Math.PI * Math.pow(dc / 1000, 3);
             var ps = da * 1000 * Math.PI / (180 * 3600);
             var hz = h0 * Ez(z, ol, om);
-            return {dc:dc, dl:dl, da:da, mu:mu, tlb:tlb, age:age_at_z, vc:vc, ps:ps, hz:hz, age_total:age_total};
+            return {dc:dc, dl:dl, da:da, mu:mu, tlb:tlb, age:age_at_z, vc:vc, ps:ps, hz:hz, age_total:age_at_z};
         }
 
         function fmt(v, d) { return (typeof v === 'number' && isFinite(v)) ? v.toFixed(d) : '—'; }
