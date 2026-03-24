@@ -405,6 +405,19 @@
             font-weight: 600;
             margin-bottom: 15px;
         }
+
+        /* Compare tab responsive */
+        @media (max-width: 900px) {
+            #tab5 .input-group > div[style*="grid-template-columns:1fr 1fr 1fr"] {
+                grid-template-columns: 1fr !important;
+            }
+            #tab5 div[style*="grid-template-columns:1fr 1fr"] {
+                grid-template-columns: 1fr !important;
+            }
+        }
+        .dev-pos { color: #ef5350; }
+        .dev-neg { color: #81c784; }
+        .dev-zero { color: #b0bec5; }
     </style>
 </head>
 <body>
@@ -425,6 +438,7 @@
             <button class="tab-button" onclick="switchTab(2)">Scorecard</button>
             <button class="tab-button" onclick="switchTab(3)">Computational Validation</button>
             <button class="tab-button" onclick="switchTab(4)">Falsification Criteria</button>
+            <button class="tab-button" onclick="switchTab(5)" style="background:rgba(76,175,80,0.15);border-color:rgba(76,175,80,0.4);color:#81c784;">🔬 Compare</button>
         </div>
 
         <!-- Tab 1: Cosmological Constant Derivation -->
@@ -1341,6 +1355,131 @@
             </div>
         </div>
 
+        <!-- Tab 6: Compare (Friedmann Integration & ΛCDM Comparison) -->
+        <div class="tab-content" id="tab5">
+            <h2 style="color: #64b5f6; margin-bottom: 25px;">🔬 Cosmology Compare Engine</h2>
+
+            <div class="info-box">
+                <strong>Unlike standard cosmology calculators that require 3–6 input parameters, CSU derives all values from first principles.</strong> Use the comparison mode below to verify this. CSU's Ω<sub>Λ</sub> = 25/36 ≈ 0.6944 and Ω<sub>M</sub> = 11/36 ≈ 0.3056 are <em>derived</em>, not fitted. H₀ = 67.4 km/s/Mpc is taken from CMB observations.
+            </div>
+
+            <!-- Section 1: Friedmann Integration Engine -->
+            <h3 style="color:#64b5f6; margin:30px 0 15px;">§1 — Friedmann Integration Engine</h3>
+            <div class="input-group">
+                <div class="input-row">
+                    <label>Redshift z:</label>
+                    <input type="number" id="cmp-z" value="1.0" min="0" max="20" step="0.01" oninput="document.getElementById('cmp-z-slider').value=this.value; runFriedmann();">
+                    <span class="description">Range 0 – 20</span>
+                </div>
+                <div style="padding:0 0 10px 0;">
+                    <input type="range" id="cmp-z-slider" min="0" max="20" step="0.01" value="1.0" style="width:100%;accent-color:#64b5f6;" oninput="document.getElementById('cmp-z').value=this.value; runFriedmann();">
+                </div>
+            </div>
+
+            <div class="results" id="friedmann-results">
+                <h4 style="color:#81c784;margin-bottom:15px;">CSU Results (Ω<sub>Λ</sub>=25/36, Ω<sub>M</sub>=11/36, H₀=67.4)</h4>
+                <div class="result-item"><span class="result-label">Comoving Distance D<sub>C</sub></span><span class="result-value" id="fr-dc">—</span></div>
+                <div class="result-item"><span class="result-label">Luminosity Distance D<sub>L</sub></span><span class="result-value" id="fr-dl">—</span></div>
+                <div class="result-item"><span class="result-label">Angular Diameter Distance D<sub>A</sub></span><span class="result-value" id="fr-da">—</span></div>
+                <div class="result-item"><span class="result-label">Distance Modulus μ</span><span class="result-value" id="fr-mu">—</span></div>
+                <div class="result-item"><span class="result-label">Lookback Time</span><span class="result-value" id="fr-tlb">—</span></div>
+                <div class="result-item"><span class="result-label">Age of Universe at z</span><span class="result-value" id="fr-age">—</span></div>
+                <div class="result-item"><span class="result-label">Comoving Volume V<sub>C</sub></span><span class="result-value" id="fr-vc">—</span></div>
+                <div class="result-item"><span class="result-label">Physical Scale</span><span class="result-value" id="fr-ps">—</span></div>
+                <div class="result-item"><span class="result-label">H(z)</span><span class="result-value" id="fr-hz">—</span></div>
+            </div>
+
+            <!-- Section 2: Interactive Plots -->
+            <h3 style="color:#64b5f6; margin:40px 0 15px;">§2 — Interactive Plots</h3>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+                <div class="input-group" style="padding:15px;position:relative;height:340px;">
+                    <h4 style="color:#90caf9;margin-bottom:10px;">Distances vs Redshift</h4>
+                    <canvas id="chart-distances"></canvas>
+                </div>
+                <div class="input-group" style="padding:15px;position:relative;height:340px;">
+                    <h4 style="color:#90caf9;margin-bottom:10px;">Lookback Time &amp; Age vs Redshift</h4>
+                    <canvas id="chart-times"></canvas>
+                </div>
+                <div class="input-group" style="padding:15px;position:relative;height:340px;">
+                    <h4 style="color:#90caf9;margin-bottom:10px;">Comoving Volume vs Redshift</h4>
+                    <canvas id="chart-volume"></canvas>
+                </div>
+                <div class="input-group" style="padding:15px;position:relative;height:340px;">
+                    <h4 style="color:#90caf9;margin-bottom:10px;">H(z) vs Redshift</h4>
+                    <canvas id="chart-hz"></canvas>
+                </div>
+            </div>
+
+            <!-- Section 3: What-If Comparison -->
+            <h3 style="color:#64b5f6; margin:40px 0 15px;">§3 — "What If" Comparison Mode</h3>
+            <div class="input-group">
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:15px; align-items:end;">
+                    <div>
+                        <label>Custom Ω<sub>Λ</sub>:</label><br>
+                        <input type="number" id="cmp-custom-ol" value="0.6847" step="0.001" min="0" max="1" style="width:100%;margin-top:5px;">
+                    </div>
+                    <div>
+                        <label>Custom Ω<sub>M</sub>:</label><br>
+                        <input type="number" id="cmp-custom-om" value="0.3153" step="0.001" min="0" max="1" style="width:100%;margin-top:5px;">
+                    </div>
+                    <div>
+                        <label>Custom H₀ (km/s/Mpc):</label><br>
+                        <input type="number" id="cmp-custom-h0" value="67.4" step="0.1" min="50" max="100" style="width:100%;margin-top:5px;">
+                    </div>
+                    <div style="display:flex;gap:8px;">
+                        <button onclick="runWhatIf()" style="padding:10px 20px;font-size:0.9em;">Compare</button>
+                        <button onclick="resetCSU()" style="padding:10px 20px;font-size:0.9em;background:linear-gradient(135deg,#43a047,#2e7d32);">Reset to CSU</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="whatif-table-container" style="overflow-x:auto;">
+                <table id="whatif-table">
+                    <thead>
+                        <tr>
+                            <th>Quantity</th>
+                            <th>CSU (derived)</th>
+                            <th>Custom</th>
+                            <th>Difference</th>
+                            <th>Planck 2018 Benchmark</th>
+                            <th>Deviation from Planck</th>
+                        </tr>
+                    </thead>
+                    <tbody id="whatif-tbody"></tbody>
+                </table>
+            </div>
+
+            <!-- Section 4: Head-to-Head with ΛCDM -->
+            <h3 style="color:#64b5f6; margin:40px 0 15px;">§4 — Head-to-Head: CSU vs ΛCDM (Planck 2018)</h3>
+            <div class="info-box" style="margin-bottom:20px;">
+                Pre-loaded comparison: <strong>CSU</strong> (Ω<sub>Λ</sub> = 25/36 ≈ 0.6944, Ω<sub>M</sub> = 11/36 ≈ 0.3056) vs <strong>Planck 2018 ΛCDM</strong> (Ω<sub>Λ</sub> = 0.6847, Ω<sub>M</sub> = 0.3153). Both use H₀ = 67.4 km/s/Mpc.
+            </div>
+            <div style="overflow-x:auto;">
+                <table id="h2h-table">
+                    <thead>
+                        <tr>
+                            <th>z</th>
+                            <th>D<sub>C</sub> CSU (Mpc)</th>
+                            <th>D<sub>C</sub> ΛCDM (Mpc)</th>
+                            <th>Deviation %</th>
+                            <th>D<sub>L</sub> CSU (Mpc)</th>
+                            <th>D<sub>L</sub> ΛCDM (Mpc)</th>
+                            <th>Deviation %</th>
+                            <th>Lookback CSU (Gyr)</th>
+                            <th>Lookback ΛCDM (Gyr)</th>
+                            <th>Deviation %</th>
+                        </tr>
+                    </thead>
+                    <tbody id="h2h-tbody"></tbody>
+                </table>
+            </div>
+
+            <h4 style="color:#90caf9; margin:30px 0 10px;">CSU vs ΛCDM Deviation (Comoving Distance)</h4>
+            <div class="input-group" style="padding:15px;position:relative;height:320px;">
+                <canvas id="chart-h2h"></canvas>
+            </div>
+        </div>
+
         <footer>
             <p><strong>CSU Cosmological Constant Calculator</strong></p>
             <p>Chrono-Singularity Unification Framework | March 2026</p>
@@ -1351,6 +1490,10 @@
             </p>
         </footer>
     </div>
+
+    <!-- Chart.js (local fallback + CDN) -->
+    <script src="chart.min.js"></script>
+    <script>if(typeof Chart==='undefined'){document.write('<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"><\/script>')}</script>
 
     <!-- Inline BigNumber.js (minified) -->
     <script>
@@ -1515,6 +1658,197 @@
         window.onload = function() {
             calculate();
         };
+    </script>
+
+    <!-- Compare Tab Script (separate block to avoid BigNumber TDZ issues) -->
+    <script>
+    (function() {
+        'use strict';
+
+        var CSU_OL = 25/36, CSU_OM = 11/36, CSU_H0 = 67.4;
+        var PLANCK_OL = 0.6847, PLANCK_OM = 0.3153, PLANCK_H0 = 67.4;
+        var C_LIGHT = 299792.458;
+
+        function simpson(f, a, b, n) {
+            if (n % 2 !== 0) n++;
+            var h = (b - a) / n, s = f(a) + f(b);
+            for (var i = 1; i < n; i++) s += (i % 2 === 0 ? 2 : 4) * f(a + i * h);
+            return s * h / 3;
+        }
+
+        function Ez(z, ol, om) { return Math.sqrt(om * Math.pow(1 + z, 3) + ol); }
+
+        function cosmoCalc(z, ol, om, h0) {
+            var dh = C_LIGHT / h0, th = 977.8 / h0;
+            var dc = (z > 0) ? dh * simpson(function(zp){return 1/Ez(zp,ol,om);}, 0, z, 1000) : 0;
+            var dl = dc * (1 + z);
+            var da = dc / (1 + z);
+            var mu = (dl > 0) ? 5 * Math.log10(dl * 1e6 / 10) : 0;
+            var tlb = (z > 0) ? th * simpson(function(zp){return 1/((1+zp)*Ez(zp,ol,om));}, 0, z, 1000) : 0;
+            var age_total = th * simpson(function(zp){return 1/((1+zp)*Ez(zp,ol,om));}, 0, 10000, 2000);
+            var age_at_z = age_total - tlb;
+            var vc = (4/3) * Math.PI * Math.pow(dc / 1000, 3);
+            var ps = da * 1000 * Math.PI / (180 * 3600);
+            var hz = h0 * Ez(z, ol, om);
+            return {dc:dc, dl:dl, da:da, mu:mu, tlb:tlb, age:age_at_z, vc:vc, ps:ps, hz:hz, age_total:age_total};
+        }
+
+        function fmt(v, d) { return (typeof v === 'number' && isFinite(v)) ? v.toFixed(d) : '—'; }
+        function pct(a, b) { return (b !== 0) ? ((a - b) / b * 100) : 0; }
+
+        window.runFriedmann = function() {
+            var z = parseFloat(document.getElementById('cmp-z').value) || 0;
+            var r = cosmoCalc(z, CSU_OL, CSU_OM, CSU_H0);
+            document.getElementById('fr-dc').textContent  = fmt(r.dc, 2) + ' Mpc';
+            document.getElementById('fr-dl').textContent  = fmt(r.dl, 2) + ' Mpc';
+            document.getElementById('fr-da').textContent  = fmt(r.da, 2) + ' Mpc';
+            document.getElementById('fr-mu').textContent  = fmt(r.mu, 4) + ' mag';
+            document.getElementById('fr-tlb').textContent = fmt(r.tlb, 4) + ' Gyr';
+            document.getElementById('fr-age').textContent = fmt(r.age, 4) + ' Gyr';
+            document.getElementById('fr-vc').textContent  = fmt(r.vc, 4) + ' Gpc³';
+            document.getElementById('fr-ps').textContent  = fmt(r.ps, 4) + ' kpc/arcsec';
+            document.getElementById('fr-hz').textContent  = fmt(r.hz, 2) + ' km/s/Mpc';
+        };
+
+        var chartDist, chartTime, chartVol, chartHz, chartH2H;
+        var chartOpts = {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: '#b0bec5', font: { size: 12 } } } },
+            scales: {
+                x: { title: { display: true, text: 'Redshift z', color: '#90caf9' }, ticks: { color: '#b0bec5' }, grid: { color: 'rgba(100,181,246,0.1)' } },
+                y: { title: { display: true, color: '#90caf9' }, ticks: { color: '#b0bec5' }, grid: { color: 'rgba(100,181,246,0.1)' } }
+            }
+        };
+
+        function buildPlotData() {
+            var zArr = [], dc = [], dl = [], da = [], tlb = [], age = [], vc = [], hz = [];
+            for (var z = 0; z <= 10; z += 0.1) zArr.push(Math.round(z * 100) / 100);
+            zArr.forEach(function(z) {
+                var r = cosmoCalc(z, CSU_OL, CSU_OM, CSU_H0);
+                dc.push(r.dc); dl.push(r.dl); da.push(r.da);
+                tlb.push(r.tlb); age.push(r.age); vc.push(r.vc); hz.push(r.hz);
+            });
+            return {zArr:zArr, dc:dc, dl:dl, da:da, tlb:tlb, age:age, vc:vc, hz:hz};
+        }
+
+        function ds(label, data, color, dash) {
+            return { label:label, data:data, borderColor:color, backgroundColor:color+'22', borderWidth:2, pointRadius:0, tension:0.3, borderDash:dash||[] };
+        }
+
+        function initCharts() {
+            var d = buildPlotData(), labels = d.zArr;
+            chartDist = new Chart(document.getElementById('chart-distances').getContext('2d'), {
+                type:'line', data:{labels:labels, datasets:[ds('Comoving D_C (Mpc)',d.dc,'#64b5f6'), ds('Luminosity D_L (Mpc)',d.dl,'#ef5350'), ds('Angular Diam. D_A (Mpc)',d.da,'#81c784')]},
+                options:{responsive:true,maintainAspectRatio:false,plugins:chartOpts.plugins,scales:{x:chartOpts.scales.x,y:{title:{display:true,text:'Distance (Mpc)',color:'#90caf9'},ticks:{color:'#b0bec5'},grid:{color:'rgba(100,181,246,0.1)'}}}}
+            });
+            chartTime = new Chart(document.getElementById('chart-times').getContext('2d'), {
+                type:'line', data:{labels:labels, datasets:[ds('Lookback Time (Gyr)',d.tlb,'#ffd54f'), ds('Age at z (Gyr)',d.age,'#ce93d8')]},
+                options:{responsive:true,maintainAspectRatio:false,plugins:chartOpts.plugins,scales:{x:chartOpts.scales.x,y:{title:{display:true,text:'Time (Gyr)',color:'#90caf9'},ticks:{color:'#b0bec5'},grid:{color:'rgba(100,181,246,0.1)'}}}}
+            });
+            chartVol = new Chart(document.getElementById('chart-volume').getContext('2d'), {
+                type:'line', data:{labels:labels, datasets:[ds('Comoving Volume (Gpc³)',d.vc,'#4dd0e1')]},
+                options:{responsive:true,maintainAspectRatio:false,plugins:chartOpts.plugins,scales:{x:chartOpts.scales.x,y:{title:{display:true,text:'Volume (Gpc³)',color:'#90caf9'},ticks:{color:'#b0bec5'},grid:{color:'rgba(100,181,246,0.1)'}}}}
+            });
+            chartHz = new Chart(document.getElementById('chart-hz').getContext('2d'), {
+                type:'line', data:{labels:labels, datasets:[ds('H(z) (km/s/Mpc)',d.hz,'#ff8a65')]},
+                options:{responsive:true,maintainAspectRatio:false,plugins:chartOpts.plugins,scales:{x:chartOpts.scales.x,y:{title:{display:true,text:'H(z) (km/s/Mpc)',color:'#90caf9'},ticks:{color:'#b0bec5'},grid:{color:'rgba(100,181,246,0.1)'}}}}
+            });
+        }
+
+        window.resetCSU = function() {
+            document.getElementById('cmp-custom-ol').value = CSU_OL.toFixed(4);
+            document.getElementById('cmp-custom-om').value = CSU_OM.toFixed(4);
+            document.getElementById('cmp-custom-h0').value = CSU_H0;
+            window.runWhatIf();
+        };
+
+        window.runWhatIf = function() {
+            var z = parseFloat(document.getElementById('cmp-z').value) || 1;
+            var col = parseFloat(document.getElementById('cmp-custom-ol').value);
+            var com = parseFloat(document.getElementById('cmp-custom-om').value);
+            var ch0 = parseFloat(document.getElementById('cmp-custom-h0').value);
+            var csu = cosmoCalc(z, CSU_OL, CSU_OM, CSU_H0);
+            var cust = cosmoCalc(z, col, com, ch0);
+            var plk = cosmoCalc(z, PLANCK_OL, PLANCK_OM, PLANCK_H0);
+            var rows = [
+                ['D_C (Mpc)', csu.dc, cust.dc, plk.dc, 2],
+                ['D_L (Mpc)', csu.dl, cust.dl, plk.dl, 2],
+                ['D_A (Mpc)', csu.da, cust.da, plk.da, 2],
+                ['μ (mag)', csu.mu, cust.mu, plk.mu, 4],
+                ['Lookback (Gyr)', csu.tlb, cust.tlb, plk.tlb, 4],
+                ['Age at z (Gyr)', csu.age, cust.age, plk.age, 4],
+                ['V_C (Gpc³)', csu.vc, cust.vc, plk.vc, 4],
+                ['Scale (kpc/″)', csu.ps, cust.ps, plk.ps, 4],
+                ['H(z) (km/s/Mpc)', csu.hz, cust.hz, plk.hz, 2],
+                ['Ω_Λ', CSU_OL, col, PLANCK_OL, 6],
+                ['Ω_M', CSU_OM, com, PLANCK_OM, 6],
+                ['H₀', CSU_H0, ch0, PLANCK_H0, 1]
+            ];
+            var tbody = document.getElementById('whatif-tbody');
+            tbody.innerHTML = '';
+            rows.forEach(function(row) {
+                var label=row[0], vCSU=row[1], vCust=row[2], vPlk=row[3], dp=row[4];
+                var diff = vCust - vCSU;
+                var devP = pct(vCust, vPlk), devCSU = pct(vCSU, vPlk);
+                var cls = Math.abs(devP) < 0.01 ? 'dev-zero' : (devP > 0 ? 'dev-pos' : 'dev-neg');
+                var clsCSU = Math.abs(devCSU) < 0.01 ? 'dev-zero' : (devCSU > 0 ? 'dev-pos' : 'dev-neg');
+                tbody.innerHTML += '<tr><td><strong>'+label+'</strong></td>'
+                    +'<td>'+fmt(vCSU,dp)+' <small class="'+clsCSU+'">('+((devCSU>=0)?'+':'')+devCSU.toFixed(3)+'%)</small></td>'
+                    +'<td>'+fmt(vCust,dp)+'</td>'
+                    +'<td>'+((diff>=0)?'+':'')+fmt(diff,dp)+'</td>'
+                    +'<td>'+fmt(vPlk,dp)+'</td>'
+                    +'<td class="'+cls+'">'+((devP>=0)?'+':'')+devP.toFixed(3)+'%</td></tr>';
+            });
+        };
+
+        function buildH2H() {
+            var zList = [0.1, 0.5, 1, 2, 5, 10, 1100];
+            var tbody = document.getElementById('h2h-tbody');
+            tbody.innerHTML = '';
+            var devDc = [], devLabels = [];
+            zList.forEach(function(z) {
+                var csu = cosmoCalc(z, CSU_OL, CSU_OM, CSU_H0);
+                var plk = cosmoCalc(z, PLANCK_OL, PLANCK_OM, PLANCK_H0);
+                var pDc = pct(csu.dc, plk.dc), pDl = pct(csu.dl, plk.dl), pTlb = pct(csu.tlb, plk.tlb);
+                devDc.push(Math.abs(pDc));
+                devLabels.push('z='+z);
+                var clsDc = Math.abs(pDc)<0.5?'dev-zero':'dev-pos';
+                var clsDl = Math.abs(pDl)<0.5?'dev-zero':'dev-pos';
+                var clsTlb = Math.abs(pTlb)<0.5?'dev-zero':'dev-pos';
+                tbody.innerHTML += '<tr><td><strong>'+z+'</strong></td>'
+                    +'<td>'+fmt(csu.dc,1)+'</td><td>'+fmt(plk.dc,1)+'</td><td class="'+clsDc+'">'+pDc.toFixed(3)+'%</td>'
+                    +'<td>'+fmt(csu.dl,1)+'</td><td>'+fmt(plk.dl,1)+'</td><td class="'+clsDl+'">'+pDl.toFixed(3)+'%</td>'
+                    +'<td>'+fmt(csu.tlb,3)+'</td><td>'+fmt(plk.tlb,3)+'</td><td class="'+clsTlb+'">'+pTlb.toFixed(3)+'%</td></tr>';
+            });
+            if (typeof Chart === 'undefined') return;
+            var ctx = document.getElementById('chart-h2h').getContext('2d');
+            if (chartH2H) chartH2H.destroy();
+            chartH2H = new Chart(ctx, {
+                type:'bar',
+                data:{labels:devLabels, datasets:[{
+                    label:'|CSU − ΛCDM| Deviation in D_C (%)', data:devDc,
+                    backgroundColor:devDc.map(function(v){return v<0.5?'rgba(129,199,132,0.7)':v<1?'rgba(255,213,79,0.7)':'rgba(239,83,80,0.7)';}),
+                    borderColor:devDc.map(function(v){return v<0.5?'#81c784':v<1?'#ffd54f':'#ef5350';}),
+                    borderWidth:1
+                }]},
+                options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#b0bec5'}}},
+                    scales:{x:{ticks:{color:'#b0bec5'},grid:{color:'rgba(100,181,246,0.1)'}},y:{title:{display:true,text:'Deviation %',color:'#90caf9'},ticks:{color:'#b0bec5'},grid:{color:'rgba(100,181,246,0.1)'}}}}
+            });
+        }
+
+        // Init on DOM ready
+        function initCompareTab() {
+            try {
+                window.runFriedmann();
+                if (typeof Chart !== 'undefined') initCharts();
+                window.runWhatIf();
+                buildH2H();
+            } catch(e) { console.error('Compare tab init error:', e); }
+        }
+
+        if (document.readyState === 'complete') { initCompareTab(); }
+        else { window.addEventListener('load', initCompareTab); }
+    })();
     </script>
 </body>
 </html>
