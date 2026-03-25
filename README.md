@@ -8,7 +8,7 @@ is verified by explicit SymPy computation with full physics calculations — no 
 results, no lazy assertions.
 
 ### Run The Calculations
-https://drlm13.github.io/cosmological-constant-derivation/tools/calculator.html
+[Launch Calculator](https://drlm13.github.io/cosmological-constant-derivation/tools/calculator.html)
 
 ### Version History
 - **V1-V3**: Initial validation with TensorHead declarations and check(True) placeholders
