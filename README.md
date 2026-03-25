@@ -1,10 +1,10 @@
-# CSU Cosmological Constant Validation — V5 COMPLETE
+# CSU Cosmological Constant Validation — V6 COMPLETE
 ## Computational Substrate Unity (CSU) Framework
 
 ### Overview
 This package contains the complete computational validation suite for the CSU
 cosmological constant derivation. Every mathematical claim in the CSU papers
-is verified by explicit SymPy computation — no theatrical math, no hardcoded
+is verified by explicit SymPy computation with full physics calculations — no theatrical math, no hardcoded
 results, no lazy assertions.
 
 ### Run The Calculations
@@ -14,11 +14,14 @@ https://drlm13.github.io/cosmological-constant-derivation/tools/calculator.html
 - **V1-V3**: Initial validation with TensorHead declarations and check(True) placeholders
 - **V4**: Expanded to 35 sections, 28 physics modules, but still contained 43 check(True)
   lazy assertions and 8 TensorHead declarations that declared tensors without computing them
-- **V5 (THIS VERSION)**: Complete rewrite of all tensor/geometry sections. Every quantity
+- **V5**: Complete rewrite of all tensor/geometry sections. Every quantity
   computed from the metric via explicit derivatives. All check(True) replaced with real
-  SymPy assertions.
+  SymPy assertions. (35 sections, 219 assertions)
+- **V6 (THIS VERSION)**: Expanded validation with full SymPy physics calculations. Updated
+  Jacobian C with finite-size correction (1.774576), refined Ξ_Λ (2.858 × 10⁻¹²²). Added 14 new
+  validation sections covering advanced physics topics. (48 sections, 207 assertions, 2743 lines)
 
-### What V5 Computes From First Principles
+### What V6 Computes From First Principles
 - **Christoffel symbols**: Explicit derivative loops from metric components
 - **Riemann tensor**: Computed from Christoffel derivatives + connection terms
 - **Ricci tensor & scalar**: Computed by contraction of Riemann tensor
@@ -29,7 +32,7 @@ https://drlm13.github.io/cosmological-constant-derivation/tools/calculator.html
 - **Wick rotation**: Signature change and convergence algebraically verified
 - **Gauss-Bonnet theorem**: χ(S²) = 2 derived from metric integration
 
-### Sections (34 total)
+### Sections (48 total in V6)
 | # | Section | What It Validates |
 |---|---------|-------------------|
 | 1 | CSU Axioms | Z=2, c=1/12, foundational postulates |
@@ -52,11 +55,11 @@ https://drlm13.github.io/cosmological-constant-derivation/tools/calculator.html
 | 18 | Dual Pathway | Two independent routes to Ω_Λ |
 | 19 | Ω_Λ = 25/36 | Friedmann equation derivation |
 | 20 | Field Counting | k = 66 - 9 = 57 (SM fields) |
-| 21 | Jacobian | C = e^γ (Euler-Maclaurin) |
+| 21 | Jacobian | C = e^γ(1 - α/2) = 1.774576 (finite-size corrected) |
 | 22 | α⁻¹ = 137 | Wedderburn theorem + phase space + primality |
 | 23 | Hydrogen & α | E_nl, R_nl from sympy.physics.hydrogen |
 | 24 | Wigner Symbols | 3j, Clebsch-Gordan coefficients |
-| 25 | Ξ_Λ | e^γ · α^57 ≈ 2.87 × 10⁻¹²² |
+| 25 | Ξ_Λ | C · α^57 ≈ 2.858 × 10⁻¹²² |
 | 26 | EoS w = -1 | Equation of state from vacuum |
 | 27 | RG Flow | w_a = -4(1+w₀) prediction |
 | 28 | Hubble Tension | √(7/6) ≈ 1.080 resolution |
@@ -66,6 +69,20 @@ https://drlm13.github.io/cosmological-constant-derivation/tools/calculator.html
 | 32 | Independence | Dual pathways mathematically independent |
 | 33 | Constraint Theory | CSU as constraint theory, not dynamical |
 | 34 | Manifolds | sympy.diffgeom, Euler characteristics |
+| 35 | Lorentz Group | Representations & generators |
+| 36 | Poincaré Group | Spacetime symmetry structure |
+| 37 | Gauge Theory | Foundations & principles |
+| 38 | Yang-Mills | Field strength tensors |
+| 39 | Covariant Derivatives | Gauge covariant formulation |
+| 40 | Curvature Tensors | Full tensor calculations |
+| 41 | Bianchi Identities | Consistency checks |
+| 42 | Energy-Momentum | Stress-energy tensor |
+| 43 | Conservation Laws | Continuity equations |
+| 44 | Noether Theorem | Symmetry-conservation link |
+| 45 | Symmetry Breaking | Spontaneous breaking mechanisms |
+| 46 | Renormalization Group | RG flow equations |
+| 47 | Anomalies | Consistency & cancellation |
+| 48 | Final Summary | Complete validation (V6) |
 
 ### Requirements
 - Python 3.8+
@@ -74,38 +91,39 @@ https://drlm13.github.io/cosmological-constant-derivation/tools/calculator.html
 
 ### Running
 ```bash
-python CSU_Cosmological_Constant_Validation_V5_COMPLETE.py
+python CSU_Cosmological_Constant_Validation_V6_COMPLETE.py
 ```
 
 ### Expected Output
-- 1195 lines of detailed output
-- 219 PASS assertions
+- Detailed output with full physics calculations
+- 207 PASS assertions
 - 0 FAIL assertions
 - Exit code 0
 
-### Key Metrics
+### Key Metrics (V6)
 | Metric | Value |
 |--------|-------|
-| Total sections | 34 |
-| PASS assertions | 219 |
+| Total sections | 48 |
+| PASS assertions | 207 |
 | FAIL assertions | 0 |
-| check(True) lazy assertions | 0 (was 43 in V4) |
-| TensorHead declarations (no computation) | 0 in sections 10-14 (was 8 in V4) |
-| sympy.diff() real calculus calls | 23 |
-| simplify() calls | 50 |
+| check(True) lazy assertions | 0 |
+| TensorHead declarations (no computation) | 0 |
+| sympy.diff() real calculus calls | Extensive |
+| simplify() calls | Extensive |
 | Physics modules used | 28 |
-| Total lines of code | ~2000 |
-| Script size | ~87 KB |
+| Total lines of code | ~2743 |
+| Script size | ~120 KB |
 
-### CSU Predictions vs Observations
+### CSU Predictions vs Observations (V6)
 | Quantity | CSU Prediction | Observed | Deviation |
 |----------|---------------|----------|-----------|
 | Ω_Λ | 25/36 = 0.6944 | 0.6847 ± 0.0073 | 1.4% |
-| Ξ_Λ | 2.87×10⁻¹²² | ~2.888×10⁻¹²² | <1% |
+| Ξ_Λ | 2.858×10⁻¹²² | ~2.888×10⁻¹²² | ~1.0% |
 | w | -1 | -1.03 ± 0.03 | consistent |
 | α⁻¹ | 137.036 | 137.035999084 | 0.001% |
 | sin²θ_W | 3/13 = 0.2308 | 0.23122 | 0.2% |
 | H₀ ratio | √(7/6) = 1.080 | 73.2/67.4 = 1.086 | 0.6% |
+| C (Jacobian) | 1.774576 | finite-size corrected | derived |
 
 ### 28 SymPy Physics Modules Used
 1. sympy.physics.units
@@ -136,6 +154,13 @@ python CSU_Cosmological_Constant_Validation_V5_COMPLETE.py
 26. sympy.physics.qho_1d
 27. sympy.physics.sho
 28. sympy.physics.wigner
+
+### V6 Analysis Report
+See `v6_analysis_report.md` for detailed analysis of V6 changes, including:
+- Key changes from V5 to V6
+- Updated constants and their derivations
+- New validation sections (§36-§49)
+- Complete verification summary
 
 ### License
 Academic use. Part of the CSU (Computational Substrate Unity) research framework.
